@@ -1,10 +1,23 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase/services/auth_service.dart';
+
+import 'home_screen.dart';
 
 
-class LoginScreen extends StatelessWidget {
-   LoginScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+   const LoginScreen({Key? key}) : super(key: key);
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
+
   TextEditingController passwordController = TextEditingController();
+
+  bool loading=false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +39,7 @@ class LoginScreen extends StatelessWidget {
       ),
           const SizedBox(height: 30,),
         TextField(
+          obscureText: true,
           controller: passwordController,
           decoration: const InputDecoration(
             labelText: "Password",
@@ -33,12 +47,28 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
           const SizedBox(height: 30,),
-          Container(
+          loading? const CircularProgressIndicator(): Container(
             height: 50,
             width: MediaQuery.of(context).size.width,
             child: ElevatedButton(
               onPressed: () async{
-
+                setState(() {
+                  loading=true;
+                });
+                if(emailController.text=='' || passwordController.text=='') {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content:  Text("All fields are required"),
+                    backgroundColor: Colors.red,));
+                }else{
+                    User? result= await AuthService().login(emailController.text, passwordController.text, context);
+                    if(result!=null)
+                      {
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> const HomeScreen()), (route) => false);
+                      }
+                  }
+                setState(() {
+                  loading=false;
+                });
               },
               child: const Text("Submit", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
             ),
