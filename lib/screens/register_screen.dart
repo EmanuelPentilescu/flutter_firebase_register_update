@@ -30,7 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           backgroundColor: Colors.deepOrangeAccent,
         ),
         body: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -83,7 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                          User? result = await AuthService().register(emailController.text, passwordController.text, context);
                          if(result!=null)
                            {
-                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> const HomeScreen()), (route) => false);
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> HomeScreen(result)), (route) => false);
                            }
                       }
                       setState(() {
@@ -116,7 +116,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     User? user= await AuthService().signInWithGoogle();
                     if(user!=null)
                       {
-                        Navigator.pushAndRemoveUntil(context,  MaterialPageRoute(builder: (context)=> const HomeScreen()), (route) => false);
+                        Navigator.pushAndRemoveUntil(context,  MaterialPageRoute(builder: (context)=> HomeScreen(user)), (route) => false);
+
                       }
                     setState(() {
                       loading=false;
