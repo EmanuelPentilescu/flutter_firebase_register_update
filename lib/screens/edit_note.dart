@@ -1,13 +1,30 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../models/note.dart';
+import '../services/firestore_service.dart';
+
 class EditNoteScreen extends StatefulWidget {
-  const EditNoteScreen({Key? key}) : super(key: key);
+  NoteModel note;
+
+  EditNoteScreen(this.note);
 
   @override
   State<EditNoteScreen> createState() => _EditNoteScreenState();
 }
 
 class _EditNoteScreenState extends State<EditNoteScreen> {
+
+  TextEditingController titleController= TextEditingController();
+  TextEditingController descriptionController= TextEditingController();
+  bool loading=false;
+
+  @override
+  void initState() {
+    titleController.text=widget.note.title;
+    descriptionController.text=widget.note.description;
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +32,35 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.delete)),
+          IconButton(
+              onPressed: ()async{
+                await showDialog(
+                    context: context,
+                    builder: (BuildContext context){
+                        return AlertDialog(
+                          title: Text("Please confirm"),
+                          content: Text("Are u sure to delete the nore"),
+                          actions: [
+                            //Yes Button
+                            TextButton(onPressed: ()async{
+                                await FirestoreService().deleteNote(widget.note.id);
+                                //close Dialog
+                                Navigator.pop(context);
+                                //go bag to home
+                                Navigator.pop(context);
+                            }, child: Text("Yes")),
+
+                            TextButton(
+                                onPressed: (){
+                                    Navigator.pop(context);
+                                }
+                                , child: Text("No"),),
+                          ],
+                        );
+                    }
+                );
+              },
+              icon: Icon(Icons.delete)),
         ],
       ),
       body: SingleChildScrollView(
@@ -35,6 +80,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 height: 20,
               ),
               TextField(
+                controller: titleController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                 ),
@@ -50,6 +96,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 ),
               ),
               TextField(
+                controller: descriptionController,
                 minLines: 5,
                 maxLines: 10,
                 decoration: InputDecoration(
@@ -63,7 +110,20 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 height: 50,
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async{
+                    if(titleController.text==''|| descriptionController.text=='') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("All fields are required")));
+                    }else{
+                      setState(() {
+                        loading=true;
+                      });
+                      await FirestoreService().updateNote(widget.note.id, titleController.text, descriptionController.text);
+                      setState(() {
+                        loading=false;
+                      });
+                    }
+                  },
                   child: Text(
                     "Update Note",
                     style: TextStyle(

@@ -2,6 +2,34 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+
+void showOTPDialog({
+  required BuildContext context,
+  required TextEditingController codeController,
+  required VoidCallback onPressed,
+})
+{
+  showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text("Enter OTP"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            TextField(
+              controller: codeController,
+            )
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+              onPressed: (){},
+              child: Text("Done"),)
+        ],
+      )
+  );
+}
 class AuthService{
   FirebaseAuth firebaseAuth= FirebaseAuth.instance;
 
@@ -66,4 +94,35 @@ class AuthService{
     print("Logout succsefull");
   }
 
+  ///PhoneSignIn
+  //
+  // Future phoneSignIn(BuildContext context, String phoneNumber) async{
+  //   TextEditingController codeController= TextEditingController();
+  //     await firebaseAuth.verifyPhoneNumber(
+  //         phoneNumber: phoneNumber,
+  //         verificationCompleted: (PhoneAuthCredential credential) async{
+  //           await firebaseAuth.signInWithCredential(credential);
+  //         },
+  //         verificationFailed: (e) {
+  //           print(e);
+  //         },
+  //       codeSent: ((String verificationId, int? resendToken) async{
+  //           showOTPDialog(
+  //               context: context,
+  //               codeController: codeController,
+  //               onPressed: ()async{
+  //                     PhoneAuthCredential credential= PhoneAuthProvider.credential(
+  //                         verificationId: verificationId,
+  //                         smsCode: codeController.text.trim(),
+  //                     );
+  //                     await firebaseAuth.signInWithCredential(credential);
+  //                     Navigator.pop(context);
+  //                     Navigator.pop(context);
+  //               });
+  //       }),
+  //       codeAutoRetrievalTimeout: (String verificationId){
+  //
+  //       },
+  //     );
+  // }
 }

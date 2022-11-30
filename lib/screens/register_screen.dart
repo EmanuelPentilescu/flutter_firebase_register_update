@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase/screens/home_screen.dart';
 import 'package:flutter_firebase/services/auth_service.dart';
-
 import 'login_screen.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
@@ -104,8 +103,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 20,),
 
-              //Divider(),
-              const SizedBox(height:20 ,),
               loading? const CircularProgressIndicator(): SignInButton(
                   Buttons.Google,
                   text: "Continue with Google",
